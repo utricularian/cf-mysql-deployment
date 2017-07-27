@@ -40,7 +40,6 @@ function install_update_manifest_releases() {
 function copy_bosh_io_release_info_to_manifest() {
   install_update_manifest_releases
 
-  COMMIT_MESSAGE_PATH="${MANIFEST_OUTPUT_DIR}" \
   ORIGINAL_DEPLOYMENT_MANIFEST_PATH=cf-mysql-deployment.yml \
   UPDATED_DEPLOYMENT_MANIFEST_PATH=cf-mysql-deployment.updated.yml \
   update-manifest-releases -build-dir "${WORKSPACE_DIR}" -release cf-mysql
@@ -50,7 +49,7 @@ function commit_changes_to_release_candidate() {
   pushd "${UPDATED_DEPLOYMENT_DIR}" > /dev/null
     cp "${MANIFEST_OUTPUT_DIR}/cf-mysql-deployment.updated.yml" cf-mysql-deployment.yml
     git add cf-mysql-deployment.yml
-    git commit -m "$(cat "${MANIFEST_OUTPUT_DIR}/commit-message") [skip ci]"
+    git commit -m "$(cat "${WORKSPACE_DIR}/commit-message") [skip ci]"
   popd > /dev/null
 }
 
