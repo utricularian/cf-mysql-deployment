@@ -15,13 +15,17 @@ set -eux
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WORKSPACE_DIR="$(cd "${CURRENT_DIR}/../.." && pwd)"
-UPDATE_MANIFEST_RELEASES_DIR="${WORKSPACE_DIR}/runtime-ci/util/update-manifest-releases"
-DEPLOYMENT_DIR="${WORKSPACE_DIR}/deployment-configuration"
-
+ORIGINAL_DEPLOYMENT_DIR="${WORKSPACE_DIR}/deployment-configuration"
+UPDATED_DEPLOYMENT_DIR="${WORKSPACE_DIR}/updated-cf-mysql-deployment-release-candidate"
+MANIFEST_OUTPUT_DIR="${WORKSPACE_DIR}/updated-deployment-manifest"
 
 function configure_git() {
   git config --global user.name "${GIT_AUTHOR_NAME:?}"
   git config --global user.email "${GIT_AUTHOR_EMAIL:?}"
+}
+
+function prepare_outputs() {
+  git clone deployment-configuration updated-cf-mysql-deployment-release-candidate
 }
 
 function install_update_manifest_releases() {
@@ -36,7 +40,17 @@ function install_update_manifest_releases() {
 function copy_bosh_io_release_info_to_manifest() {
   install_update_manifest_releases
 
+  ORIGINAL_DEPLOYMENT_MANIFEST_PATH=cf-mysql-deployment.yml \
+  UPDATED_DEPLOYMENT_MANIFEST_PATH=cf-mysql-deployment.updated.yml \
   update-manifest-releases -build-dir "${WORKSPACE_DIR}" -release cf-mysql
+}
+
+function commit_changes_to_release_candidate() {
+  pushd "${UPDATED_DEPLOYMENT_DIR}" > /dev/null
+    cp "${MANIFEST_OUTPUT_DIR}/cf-mysql-deployment.updated.yml" cf-mysql-deployment.yml
+    git add cf-mysql-deployment.yml
+    git commit -m "$(cat commit-message) [skip ci]"
+  popd > /dev/null
 }
 
 #pushd "${DEPLOYMENT_DIR}"
@@ -63,11 +77,10 @@ function copy_bosh_io_release_info_to_manifest() {
 #popd
 
 
-#determine_new_release_versions
 copy_bosh_io_release_info_to_manifest
-#configure_git
-#commit_deployment_manifest_to_release_candidate
-#create_version_branch_from_release_candidate
+configure_git
+prepare_outputs
+commit_changes_to_release_candidate
 
 echo "for inspection"
 exit 1
