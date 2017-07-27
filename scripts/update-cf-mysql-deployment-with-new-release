@@ -34,14 +34,20 @@ function fake_stemcell_release() {
   touch "${STEMCELL_DIR}/url"
 }
 
+function install_update_manifest_releases() {
+  mkdir -p "${WORKSPACE_DIR}/go/src/github.com/cloudfoundry"
+  ln -s "${WORKSPACE_DIR}/runtime-ci" "${WORKSPACE_DIR}/go/src/github.com/cloudfoundry/runtime-ci"
+  export GOPATH="${WORKSPACE_DIR}/go"
+  export PATH="$GOPATH/bin":$PATH
+
+  go install github.com/cloudfoundry/runtime-ci/util/update-manifest-releases
+}
+
 function copy_bosh_io_release_info_to_manifest() {
+  install_update_manifest_releases
   fake_stemcell_release
 
-  pushd "${UPDATE_MANIFEST_RELEASES_DIR}"
-    go run main.go -build-dir "${WORKSPACE_DIR}" -release cf-mysql
-  popd
-
-
+  update-manifest-releases -build-dir "${WORKSPACE_DIR}" -release cf-mysql
 }
 
 #pushd "${DEPLOYMENT_DIR}"
