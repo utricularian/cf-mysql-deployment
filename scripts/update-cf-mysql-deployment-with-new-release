@@ -68,3 +68,7 @@ copy_bosh_io_release_info_to_manifest
 #configure_git
 #commit_deployment_manifest_to_release_candidate
 #create_version_branch_from_release_candidate
+
+echo "for inspection"
+exit 1
+
