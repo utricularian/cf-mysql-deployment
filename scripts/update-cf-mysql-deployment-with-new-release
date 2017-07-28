@@ -16,7 +16,7 @@ set -eux
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WORKSPACE_DIR="$(cd "${CURRENT_DIR}/../.." && pwd)"
 ORIGINAL_DEPLOYMENT_DIR="${WORKSPACE_DIR}/deployment-configuration"
-UPDATED_DEPLOYMENT_DIR="${WORKSPACE_DIR}/updated-cf-mysql-deployment-release-candidate"
+UPDATED_DEPLOYMENT_DIR="${WORKSPACE_DIR}/updated-cf-mysql-deployment-master"
 MANIFEST_OUTPUT_DIR="${WORKSPACE_DIR}/updated-deployment-manifest"
 
 function configure_git() {
@@ -25,7 +25,7 @@ function configure_git() {
 }
 
 function prepare_outputs() {
-  git clone deployment-configuration updated-cf-mysql-deployment-release-candidate
+  git clone "${ORIGINAL_DEPLOYMENT_DIR}" "${UPDATED_DEPLOYMENT_DIR}"
 }
 
 function install_update_manifest_releases() {
@@ -45,11 +45,14 @@ function copy_bosh_io_release_info_to_manifest() {
   update-manifest-releases -build-dir "${WORKSPACE_DIR}" -release cf-mysql
 }
 
-function commit_changes_to_release_candidate() {
+function commit_changes_to_master() {
   pushd "${UPDATED_DEPLOYMENT_DIR}" > /dev/null
     cp "${MANIFEST_OUTPUT_DIR}/cf-mysql-deployment.updated.yml" cf-mysql-deployment.yml
-    git add cf-mysql-deployment.yml
-    git commit -m "$(cat "${WORKSPACE_DIR}/commit-message") [skip ci]"
+
+    if [[ -n $(git status --porcelain) ]]; then
+      git add cf-mysql-deployment.yml
+      git commit -m "$(cat "${WORKSPACE_DIR}/commit-message")"
+    fi
   popd > /dev/null
 }
 
@@ -80,7 +83,7 @@ function commit_changes_to_release_candidate() {
 copy_bosh_io_release_info_to_manifest
 configure_git
 prepare_outputs
-commit_changes_to_release_candidate
+commit_changes_to_master
 
 echo "for inspection"
 exit 1
