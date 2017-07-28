@@ -2,16 +2,6 @@
 
 set -eux
 
-#SSH_DIR=$HOME/.ssh
-#SSH_KEY=${SSH_DIR}/id_rsa_github
-#
-#mkdir -p "${SSH_DIR}"
-#echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" >> $SSH_DIR/config
-#echo -n "${GIT_PRIVATE_KEY:?}" > "${SSH_KEY}"
-#chmod 0600 "${SSH_KEY}"
-#
-#eval $(ssh-agent)
-#ssh-add "${SSH_KEY}"
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WORKSPACE_DIR="$(cd "${CURRENT_DIR}/../.." && pwd)"
@@ -56,35 +46,9 @@ function commit_changes_to_master() {
   popd > /dev/null
 }
 
-#pushd "${DEPLOYMENT_DIR}"
-#
-#  git checkout release-candidate
-#  git checkout -b "v${VERSION}"
-#
-#  copy_bosh_io_release_info_to_manifest
-#
-#  git add cf-mysql-deployment.yml
-#  git commit -m "Bump version of cf-mysql-release in cf-mysql-deployment.yml"
-#
-#  git checkout develop
-#  git merge "${VERSION_BRANCH}"
-#  git checkout master
-#  git merge develop
-#
-#  #Tags the head of the branch
-#
-#  git tag "v${VERSION}"
-#
-#
-##git push origin :${TAG}
-#popd
-
-
 copy_bosh_io_release_info_to_manifest
 configure_git
 prepare_outputs
 commit_changes_to_master
 
-echo "for inspection"
-exit 1
 
