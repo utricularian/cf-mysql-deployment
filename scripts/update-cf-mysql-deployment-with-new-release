@@ -2,7 +2,6 @@
 
 set -eux
 
-
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WORKSPACE_DIR="$(cd "${CURRENT_DIR}/../.." && pwd)"
 ORIGINAL_DEPLOYMENT_DIR="${WORKSPACE_DIR}/deployment-configuration"
@@ -50,5 +49,3 @@ copy_bosh_io_release_info_to_manifest
 configure_git
 prepare_outputs
 commit_changes_to_master
-
-
