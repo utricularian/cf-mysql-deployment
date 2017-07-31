@@ -1,5 +1,4 @@
 OMG THE SKY IS FALLING - conflicting change 1 (develop)
-AGAIN
 
 # Cloud Foundry MySQL Bosh Deployment
 
