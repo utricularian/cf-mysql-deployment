@@ -1,4 +1,4 @@
-OMG THE SKY IS FALLING - conflicting change 1 (master)
+OMG THE SKY IS FALLING
 AGAIN
 
 # Cloud Foundry MySQL Bosh Deployment
